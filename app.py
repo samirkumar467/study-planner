@@ -46,10 +46,10 @@ def signup():
         conn.commit()
         conn.close()
 
-        return redirect('/login')
+        return redirect('/index')
     return render_template("signup.html")
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/index', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         u = request.form['username']
@@ -66,18 +66,18 @@ def login():
             return redirect('/')
         else:
             return "Invalid Login"
-    return render_template("login.html")
+    return render_template("index.html")
 
 @app.route('/logout')
 def logout():
     session.pop('user',None)
-    return redirect('/login')
+    return redirect('/index')
 
 # ---------- HOME ----------
 @app.route('/')
 def home():
     if 'user' not in session:
-        return redirect('/login')
+        return redirect('/index')
 
     conn = sqlite3.connect('database.db')
     cur = conn.cursor()
