@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Welcome, {{ user }} 👋</h1>
+
+<div class="card">
+<h2>Add Study Task</h2>
+<form method="POST" action="/add">
+<input type="text" name="subject" placeholder="Subject" required>
+<input type="text" name="topic" placeholder="Topic" required>
+<input type="number" name="days" placeholder="Days Left" required>
+<button>Add</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Progress: {{ progress }}%</h2>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h2>Your Tasks</h2>
+
+<table>
+<tr><th>Subject</th><th>Topic</th><th>Status</th></tr>
+
+{% for row in data %}
+<tr>
+<td>{{ row[1] }}</td>
+<td>{{ row[2] }}</td>
+<td>
+{% if row[4]==0 %}
+<a href="/complete/{{ row[0] }}">✔</a>
+{% else %}
+Done
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+<a href="/logout" class="logout">Logout</a>
+
+</div>
+
+<script>
+const done = Number("{{ done }}");
+const remaining = Number("{{ remaining }}");
+
+new Chart(document.getElementById('chart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Done', 'Remaining'],
+        datasets: [{
+            data: [done, remaining]
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+    font-family: 'Segoe UI';
+    background: #0f172a;
+    color: white;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background: #38bdf8;
+    color: black;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    background: white;
+    color: black;
+    border-radius: 10px;
+}
+
+.logout {
+    color: red;
+}
