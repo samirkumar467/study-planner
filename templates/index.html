@@ -1,19 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-</head>
-<body>
-    <form method="POST">
-<h2>Login</h2>
-<input name="username" placeholder="Username">
-<br><br>
-<input name="password" type="password" placeholder="Password">
-<br><br>
-<button>Login</button>
-<a href="/signup">Signup</a>
-</form>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Login | Student Planner{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block content %}
+<main class="auth-shell">
+    <section class="auth-hero">
+        <p class="eyebrow">Student Planner</p>
+        <h1>Plan sharper study sessions with less chaos.</h1>
+        <p class="auth-copy">
+            Track subjects, stay ahead of deadlines, and see your study progress at a glance.
+        </p>
+        <div class="hero-points">
+            <span>Structured study tracking</span>
+            <span>Clean progress visibility</span>
+            <span>Built for focused students</span>
+        </div>
+    </section>
+
+    <section class="auth-card">
+        <div class="card-header">
+            <p class="eyebrow">Welcome back</p>
+            <h2>Log in to your planner</h2>
+            <p>Pick up where you left off and keep your study streak moving.</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            <label for="username">Username</label>
+            <input id="username" name="username" placeholder="Enter your username" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Enter your password" required>
+
+            <button type="submit">Log In</button>
+        </form>
+
+        <p class="auth-switch">
+            New here?
+            <a href="{{ url_for('signup') }}">Create an account</a>
+        </p>
+    </section>
+</main>
+{% endblock %}

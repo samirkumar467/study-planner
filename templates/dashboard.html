@@ -1,74 +1,122 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Dashboard</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}Dashboard | Student Planner{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 
-<div class="container">
+{% block content %}
+<main class="dashboard-shell">
+    <section class="hero-panel">
+        <div>
+            <p class="eyebrow">Study command center</p>
+            <h1>{{ user }}'s planner</h1>
+            <p class="hero-copy">
+                Keep your subjects organized, finish tasks faster, and stay ahead of upcoming deadlines.
+            </p>
+        </div>
 
-<h1>Welcome, {{ user }} 👋</h1>
+        <div class="hero-actions">
+            <div class="progress-ring" style="--progress: {{ progress }};" aria-label="Overall progress {{ progress }} percent">
+                <div>
+                    <strong>{{ progress }}%</strong>
+                    <span>Complete</span>
+                </div>
+            </div>
 
-<div class="card">
-<h2>Add Study Task</h2>
-<form method="POST" action="/add">
-<input type="text" name="subject" placeholder="Subject" required>
-<input type="text" name="topic" placeholder="Topic" required>
-<input type="number" name="days" placeholder="Days Left" required>
-<button>Add</button>
-</form>
-</div>
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" class="ghost-button">Log Out</button>
+            </form>
+        </div>
+    </section>
 
-<div class="card">
-<h2>Progress: {{ progress }}%</h2>
-<canvas id="chart"></canvas>
-</div>
+    <section class="stat-grid">
+        <article class="stat-card">
+            <span class="stat-label">Total tasks</span>
+            <strong>{{ total }}</strong>
+            <p>Everything currently in your study pipeline.</p>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Completed</span>
+            <strong>{{ done }}</strong>
+            <p>Finished work you can stop worrying about.</p>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Remaining</span>
+            <strong>{{ remaining }}</strong>
+            <p>The tasks still competing for your attention.</p>
+        </article>
+        <article class="stat-card">
+            <span class="stat-label">Next deadline</span>
+            <strong>{% if upcoming is not none %}{{ upcoming }} day{% if upcoming != 1 %}s{% endif %}{% else %}Clear{% endif %}</strong>
+            <p>{% if upcoming is not none %}Closest unfinished task in your planner.{% else %}No unfinished tasks right now.{% endif %}</p>
+        </article>
+    </section>
 
-<div class="card">
-<h2>Your Tasks</h2>
+    <section class="content-grid">
+        <article class="panel add-panel">
+            <div class="panel-heading">
+                <p class="eyebrow">New task</p>
+                <h2>Add a study item</h2>
+                <p>Break down subjects into small, trackable wins.</p>
+            </div>
 
-<table>
-<tr><th>Subject</th><th>Topic</th><th>Status</th></tr>
+            <form method="POST" action="{{ url_for('add') }}" class="task-form">
+                <label for="subject">Subject</label>
+                <input id="subject" type="text" name="subject" placeholder="Computer Science" required>
 
-{% for row in data %}
-<tr>
-<td>{{ row[1] }}</td>
-<td>{{ row[2] }}</td>
-<td>
-{% if row[4]==0 %}
-<a href="/complete/{{ row[0] }}">✔</a>
-{% else %}
-Done
-{% endif %}
-</td>
-</tr>
-{% endfor %}
+                <label for="topic">Topic</label>
+                <input id="topic" type="text" name="topic" placeholder="Finish graph algorithms notes" required>
 
-</table>
+                <label for="days">Days left</label>
+                <input id="days" type="number" name="days" placeholder="3" min="0" required>
 
-</div>
+                <button type="submit">Add Task</button>
+            </form>
+        </article>
 
-<a href="/logout" class="logout">Logout</a>
+        <article class="panel tasks-panel">
+            <div class="panel-heading">
+                <p class="eyebrow">Task overview</p>
+                <h2>Your study queue</h2>
+                <p>Prioritize what is due soon and keep momentum on unfinished work.</p>
+            </div>
 
-</div>
+            {% if tasks %}
+                <div class="task-list">
+                    {% for task in tasks %}
+                        <article class="task-item {% if task['completed'] %}task-complete{% endif %}">
+                            <div class="task-main">
+                                <div class="task-title-row">
+                                    <h3>{{ task['topic'] }}</h3>
+                                    <span class="status-pill {% if task['completed'] %}status-done{% elif task['days'] == 0 %}status-urgent{% else %}status-open{% endif %}">
+                                        {% if task['completed'] %}
+                                            Done
+                                        {% elif task['days'] == 0 %}
+                                            Due today
+                                        {% else %}
+                                            {{ task['days'] }} day{% if task['days'] != 1 %}s{% endif %} left
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <p>{{ task['subject'] }}</p>
+                            </div>
 
-<script>
-const done = Number("{{ done }}");
-const remaining = Number("{{ remaining }}");
-
-new Chart(document.getElementById('chart'), {
-    type: 'doughnut',
-    data: {
-        labels: ['Done', 'Remaining'],
-        datasets: [{
-            data: [done, remaining]
-        }]
-    }
-});
-</script>
-
-</body>
-</html>
+                            {% if not task['completed'] %}
+                                <form method="POST" action="{{ url_for('complete', task_id=task['id']) }}">
+                                    <button type="submit" class="secondary-button">Mark Complete</button>
+                                </form>
+                            {% else %}
+                                <span class="task-complete-label">Completed</span>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No tasks yet</h3>
+                    <p>Add your first study task to start building a smarter routine.</p>
+                </div>
+            {% endif %}
+        </article>
+    </section>
+</main>
+{% endblock %}
